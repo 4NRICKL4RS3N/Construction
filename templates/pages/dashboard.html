@@ -65,7 +65,8 @@
     </script>
 
     <div>
-        <form enctype="multipart/form-data">
+        <form action="{% url 'import-data' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <h2>Importation Données</h2>
             <div>
                 <label for="mt">Maison et travaux</label>
@@ -74,6 +75,17 @@
             <div>
                 <label for="d">Devis</label>
                 <input id="d" type="file" name="devis">
+            </div>
+            <input type="submit" value="Envoyer">
+        </form>
+    </div>
+    <div>
+        <form action="{% url 'import-paiement' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>Importation Paiement</h2>
+            <div>
+                <label for="mt">Paiement</label>
+                <input id="mt" type="file" name="paiement">
             </div>
             <input type="submit" value="Envoyer">
         </form>

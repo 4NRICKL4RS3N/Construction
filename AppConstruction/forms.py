@@ -1,6 +1,6 @@
 import django
 from django.forms import forms, ModelForm
-from AppConstruction.models import Client, Admin, Devis, Paiement
+from AppConstruction.models import Client, Admin, Devis, Paiement, Maison, Travaux, MaisonTravaux, Finition
 
 
 class ClientForm(ModelForm):
@@ -77,3 +77,64 @@ class PaiementForm(ModelForm):
             field.label_suffix = ''
         if client_id is not None:
             self.fields['devis'].queryset = Devis.objects.filter(client=client_id)
+
+
+class MaisonForm(ModelForm):
+    class Meta:
+        model = Maison
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'id': 'input_' + field_name
+            })
+            field.label_suffix = ''
+
+
+class TravauxForm(ModelForm):
+    class Meta:
+        model = Travaux
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'id': 'input_' + field_name
+            })
+            field.label_suffix = ''
+
+
+class MaisonTravauxForm(ModelForm):
+    class Meta:
+        model = MaisonTravaux
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'id': 'input_' + field_name
+            })
+            field.label_suffix = ''
+
+
+class FinitionForm(ModelForm):
+    class Meta:
+        model = Finition
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({
+                'class': 'form-control',
+                'id': 'input_' + field_name
+            })
+            field.label_suffix = ''
+
