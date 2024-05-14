@@ -1,0 +1,55 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Devis
+{% endblock %}
+
+{% block content %}
+    <table id="data_table" class="table datatable">
+        <thead>
+        <tr>
+            <th class="table_head">
+                designation
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                unité
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                quantité
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                prix unitaire
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                total
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in devis_detail %}
+            <tr>
+                <td style="text-align: left;">{{ item.designation }}</td>
+                <td style="text-align: right;">{{ item.unite }}</td>
+                <td style="text-align: right;">{{ item.quantite }}</td>
+                <td style="text-align: right;">{{ item.prix_unitaire }}</td>
+                <td style="text-align: right;">{{ item.prix_total }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

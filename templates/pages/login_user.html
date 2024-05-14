@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    {# vendor css #}
+    <link href="{% static 'css/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+    <link href="{% static 'css/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+
+    {# font awesome #}
+    <link href="{% static 'css/font_awesome.all.min.css' %}" rel="stylesheet">
+
+    {# jquery #}
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+
+    <title>Se connecter</title>
+</head>
+<body>
+<main>
+    <div class="container">
+
+        <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+
+                        <div class="d-flex justify-content-center py-4">
+                            <a href="" class="logo d-flex align-items-center w-auto">
+                                <img src="" alt="">
+                                <span class="d-none d-lg-block">Construction</span>
+                            </a>
+                        </div><!-- End Logo -->
+
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div id="error-message" class="alert alert-danger" style="display:none"></div>
+                                <div class="pt-4 pb-2">
+                                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                                    <p class="text-center small">Entrer votre numero de téléphone</p>
+                                </div>
+
+                                {% include 'components/form.html' with form=form class="row g-3" id="login-form" method="post" submit="construire" %}
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+</main><!-- End #main -->
+
+<script>
+    $(document).ready( function () {
+        $( '#login-form' ).on( 'submit', function (event) {
+            event.preventDefault();
+            $.ajaxSetup( {
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader( "X-CSRFToken", "{{ csrf_token }}" );
+                }
+            } );
+            $.ajax( {
+                url: "{% url 'login_user' %}",
+                type: "post",
+                data: $( this ).serialize(),
+                success: function (response) {
+                    if (response.success === false) {
+                        var errors = response.errors;
+                        $( "#error-message" ).html( errors );
+                        $( "#error-message" ).show();
+                    } else {
+                        console.log("nety")
+                        window.location.href = response.redirect_url;
+                    }
+                }
+            } );
+            return false;
+        } );
+    } );
+</script>
+
+</body>
+</html>

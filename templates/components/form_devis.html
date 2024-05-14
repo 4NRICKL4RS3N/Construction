@@ -1,0 +1,43 @@
+<form class="form-floating {{ class }}" id="{{ id }}" action="{% url 'construction' %}?form=devis"
+      method="{{ method }}">
+    {% csrf_token %}
+    <div class="row">
+        <input type="hidden" id="maison-input" name="maison" value="">
+        {% for maison in maisons %}
+            <div class="col-sm-3">
+                <div id="card-{{ maison.id }}" class="card" onclick="highlightAndChange({{ maison.id }})">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ maison.designation }}</h5>
+                        <p class="card-text">{{ maison.description }}.</p>
+                        <a href="#" class="btn btn-primary">Selectionner</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-12">
+        <label for="input{{ form.finition.label }}" class="form-label">{{ form.finition.label }}</label>
+        <div class="col-sm-10">
+            {{ form.finition }}
+        </div>
+    </div>
+    <div class="col-12">
+        <label for="input{{ form.date_devis.label }}" class="form-label">{{ form.date_devis.label }}</label>
+        <div class="col-sm-10">
+            {{ form.date_devis }}
+        </div>
+    </div>
+    <div class="col-12">
+        <label for="input{{ form.date_debut_construction.label }}" class="form-label">{{ form.date_debut_construction.label }}</label>
+        <div class="col-sm-10">
+            {{ form.date_debut_construction }}
+        </div>
+    </div>
+    <div class="col-12">
+        <label for="input{{ form.date_fin_construction.label }}" class="form-label">{{ form.date_fin_construction.label }}</label>
+        <div class="col-sm-10">
+            {{ form.date_fin_construction }}
+        </div>
+    </div>
+    <input class="btn btn-primary" type="submit" value="{{ submit }}">
+</form>

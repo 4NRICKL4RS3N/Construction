@@ -1,0 +1,82 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+    <div class="card text-white mb-3" style="max-width: 18rem;">
+        <div class="card-header">Montant total des devis</div>
+        <div class="card-body">
+            <h5 class="card-title">{{ montant_total_devis }}</h5>
+        </div>
+    </div>
+
+    <canvas id="devis-mois"></canvas>
+    <script>
+        const data_mois = {{ montant_devis_mois|safe }}
+        var ctx = document.getElementById( 'devis-mois' ).getContext( '2d' );
+        var myChart = new Chart( ctx, {
+            type: 'bar',
+            data: {
+                labels: data_mois.map( row => row.month ),
+                datasets: [{
+                    label: 'Total devis par mois',
+                    data: data_mois.map( row => row.total_price ),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        } );
+    </script>
+
+    <canvas id="devis-year"></canvas>
+    <script>
+        const data_year = {{ montant_devis_year|safe }}
+        var ctx = document.getElementById( 'devis-year' ).getContext( '2d' );
+        var myChart = new Chart( ctx, {
+            type: 'bar',
+            data: {
+                labels: data_year.map( row => row.year ),
+                datasets: [{
+                    label: 'Total devis par année',
+                    data: data_year.map( row => row.total_price ),
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        } );
+    </script>
+
+    <div>
+        <form enctype="multipart/form-data">
+            <h2>Importation Données</h2>
+            <div>
+                <label for="mt">Maison et travaux</label>
+                <input id="mt" type="file" name="maison_travaux">
+            </div>
+            <div>
+                <label for="d">Devis</label>
+                <input id="d" type="file" name="devis">
+            </div>
+            <input type="submit" value="Envoyer">
+        </form>
+    </div>
+
+{% endblock %}

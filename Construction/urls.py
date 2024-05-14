@@ -17,6 +17,20 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from AppConstruction.views import ConnectionUserView, FirstRedirect, ClientView, ConnectionAdminView, AdminView, Logout, \
+    DevisDetailView, DashboardView, ImportData
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('', FirstRedirect.as_view(), name='first_redirect'),
+
+    path('admin/', ConnectionAdminView.as_view(), name='login_admin'),
+    path('admin/devis', AdminView.as_view(), name='devis-admin'),
+    path('admin/devis/<int:pk>', DevisDetailView.as_view(), name='devis-detail'),
+    path('admin/dashboard', DashboardView.as_view(), name='dashboard'),
+    path('admin/dashboard/import-data', ImportData.as_view(), name='import-data'),
+
+    path('login/', ConnectionUserView.as_view(), name='login_user'),
+    path('construction/', ClientView.as_view(), name='construction'),
+
+    path('logout/', Logout.as_view(), name='logout')
 ]

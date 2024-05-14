@@ -1,0 +1,45 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Devis
+{% endblock %}
+
+{% block content %}
+    <table id="data_table" class="table datatable">
+        <thead>
+        <tr>
+            <th class="table_head">
+                id
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                montant total
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                paiement effectué
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in devis %}
+            <tr>
+                <td style="text-align: left;">{{ item.id }}</td>
+                <td style="text-align: right;">{{ item.prix_total }}</td>
+                <td style="text-align: right;">{{ item.paiement_total }}</td>
+                <td>
+                    <a href="" class="btn btn-primary">view</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
