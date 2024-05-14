@@ -1,4 +1,5 @@
 import django
+from django.db import connection
 from django.forms import forms, ModelForm
 from AppConstruction.models import Client, Admin, Devis, Paiement, Maison, Travaux, MaisonTravaux, Finition
 
@@ -66,6 +67,17 @@ class PaiementForm(ModelForm):
         widgets = {
             'date': django.forms.DateInput(attrs={'type': 'date'}),
         }
+
+    def clean_montant(self):
+        montant = self.cleaned_data['montant']
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT sum(montant) AS montant from "AppConstruction_paiement" where devis_id = %i group by devis_id', self.cleaned_data['devis'])
+            montant_total = cursor.fetchone()[0]
+            montant_total = montant_total + montant
+            devis = Devis.objects.get(id=self.cleaned_data['devis'])
+            if montant_total > devis.prix_total:
+                raise forms.ValidationError('montant exceeds')
+        return montant
 
     def __init__(self, client_id=None, *args, **kwargs):
         super().__init__(*args, **kwargs)

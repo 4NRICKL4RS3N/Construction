@@ -1,0 +1,11 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Update finition {{ finition.designation }}
+{% endblock %}
+
+{% block content %}
+	<div>
+        {% include 'components/form.html' with id=finition.id submit="valider" form=form_finition method="post" %}
+    </div>
+{% endblock %}

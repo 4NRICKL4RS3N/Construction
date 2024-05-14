@@ -1,5 +1,6 @@
 <form class="form-floating {{ class }}" id="{{ id }}" action="{{ action }}" method="{{ method }}">
     {% csrf_token %}
+    <input type="hidden" name="id" value="{{ id }}">
     {% for field in form %}
         <div class="col-12">
             <label for="input{{ field.label }}" class="form-label">{{ field.label }}</label>

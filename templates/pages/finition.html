@@ -1,0 +1,38 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Finitions
+{% endblock %}
+
+{% block content %}
+    <table id="data_table" class="table datatable">
+        <thead>
+        <tr>
+            <th class="table_head">
+                designation
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th class="table_head">
+                pourcentage
+                <span style="color: Dodgerblue;">
+                    <i class="sort-icon fa fa-sort"></i>
+                </span>
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in finition %}
+            <tr>
+                <td style="text-align: left;">{{ item.designation }}</td>
+                <td style="text-align: right;">{{ item.pourcentage }}</td>
+                <td>
+                    <a href="{% url 'finition-admin' %}/update/{{ item.id }}" class="btn btn-warning">update</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

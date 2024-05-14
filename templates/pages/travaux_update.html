@@ -1,0 +1,11 @@
+{% extends 'components/dashboard_base.html' %}
+
+{% block title %}
+    Update travaux {{ travaux.code_travaux }}
+{% endblock %}
+
+{% block content %}
+	<div>
+        {% include 'components/form.html' with id=travaux.id submit="valider" form=form_travaux method="post" %}
+    </div>
+{% endblock %}

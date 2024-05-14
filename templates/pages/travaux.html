@@ -1,7 +1,7 @@
 {% extends 'components/dashboard_base.html' %}
 
 {% block title %}
-    Devis
+    Travaux
 {% endblock %}
 
 {% block content %}
@@ -9,25 +9,25 @@
         <thead>
         <tr>
             <th class="table_head">
-                id
+                code travaux
                 <span style="color: Dodgerblue;">
                     <i class="sort-icon fa fa-sort"></i>
                 </span>
             </th>
             <th class="table_head">
-                montant total
+                designation
                 <span style="color: Dodgerblue;">
                     <i class="sort-icon fa fa-sort"></i>
                 </span>
             </th>
             <th class="table_head">
-                paiement effectué
+                unité
                 <span style="color: Dodgerblue;">
                     <i class="sort-icon fa fa-sort"></i>
                 </span>
             </th>
             <th class="table_head">
-                pourcentage
+                prix unitaire
                 <span style="color: Dodgerblue;">
                     <i class="sort-icon fa fa-sort"></i>
                 </span>
@@ -36,14 +36,14 @@
         </tr>
         </thead>
         <tbody>
-        {% for item in devis %}
+        {% for item in travaux %}
             <tr>
-                <td style="text-align: left;">{{ item.id }}</td>
-                <td style="text-align: right;">{{ item.prix_total }}</td>
-                <td style="text-align: right;">{{ item.paiement_total }}</td>
-                <td style="text-align: right;">{{ item.pourcentage }}%</td>
+                <td style="text-align: left;">{{ item.code_travaux }}</td>
+                <td style="text-align: right;">{{ item.designation }}</td>
+                <td style="text-align: right;">{{ item.unite }}</td>
+                <td style="text-align: right;">{{ item.prix_unitaire }}</td>
                 <td>
-                    <a href="" class="btn btn-primary">view</a>
+                    <a href="{% url 'travaux-admin' %}/update/{{ item.id }}" class="btn btn-warning">update</a>
                 </td>
             </tr>
         {% endfor %}

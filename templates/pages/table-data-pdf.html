@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% load custom_tags %}
+
+<style>
+    .table_head:hover {
+        cursor: pointer;
+    }
+</style>
+
+<h1>Devis {{ devis.ref_devis }}</h1>
+
+<table class="table" border="1">
+    <thead>
+    <tr>
+        <th class="table_head">
+            Designation
+        </th>
+        <th class="table_head">
+            Unité
+        </th>
+        <th class="table_head">
+            Quantité
+        </th>
+        <th class="table_head">
+            Prix unitaire
+        </th>
+        <th class="table_head">
+            Total
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in data %}
+        <tr>
+            <td style="text-align: left;">{{ item.designation }}</td>
+            <td style="text-align: left;">{{ item.unite }}</td>
+            <td style="text-align: right;">{{ item.quantite }}</td>
+            <td style="text-align: right;">{{ item.prix_unitaire }}</td>
+            <td style="text-align: right;">{{ item.prix_total }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h2>Total : {{ devis.prix_total }}</h2>
+</body>
+</html>
