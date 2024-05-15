@@ -48,7 +48,26 @@
                                     <p class="text-center small">Entrer votre numero de téléphone</p>
                                 </div>
 
-                                {% include 'components/form.html' with form=form class="row g-3" id="login-form" method="post" submit="se connecter" %}
+                                <form class="form-floating row g-3" id="login-form" action=""
+                                      method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{ id }}">
+                                    <div class="col-12">
+                                        <label for="input{{ form.email.label }}"
+                                               class="form-label">{{ form.email.label }}</label>
+                                        <div class="col-sm-10">
+                                            {{ form.email }}
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <label for="input{{ form.password.label }}"
+                                               class="form-label">{{ form.password.label }}</label>
+                                        <div class="col-sm-10">
+                                            {{ form.password }}
+                                        </div>
+                                    </div>
+                                    <input class="btn btn-primary" type="submit" value="Se connecter">
+                                </form>
                             </div>
                         </div>
 
@@ -62,7 +81,7 @@
 </main><!-- End #main -->
 
 <script>
-    $(document).ready( function () {
+    $( document ).ready( function () {
         $( '#login-form' ).on( 'submit', function (event) {
             event.preventDefault();
             $.ajaxSetup( {
@@ -80,7 +99,7 @@
                         $( "#error-message" ).html( errors );
                         $( "#error-message" ).show();
                     } else {
-                        console.log("nety")
+                        console.log( "nety" )
                         window.location.href = response.redirect_url;
                     }
                 }

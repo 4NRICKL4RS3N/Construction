@@ -43,7 +43,7 @@
                 <td style="text-align: right;">{{ item.paiement_total }}</td>
                 <td style="text-align: right;">{{ item.pourcentage }}%</td>
                 <td>
-                    <a href="" class="btn btn-primary">view</a>
+                    <a href="{% url 'devis-detail' item.id %}" class="btn btn-primary">view</a>
                 </td>
             </tr>
         {% endfor %}

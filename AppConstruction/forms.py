@@ -38,6 +38,8 @@ class AdminForm(ModelForm):
                 'id': 'input_' + field_name
             })
             field.label_suffix = ''
+        self.fields['email'].initial = 'admin@gmail.com'
+        self.fields['password'].initial = 'admin'
 
 
 class DevisForm(ModelForm):
@@ -70,13 +72,18 @@ class PaiementForm(ModelForm):
 
     def clean_montant(self):
         montant = self.cleaned_data['montant']
+        devis_id = self.cleaned_data['devis'].id
         with connection.cursor() as cursor:
-            cursor.execute('SELECT sum(montant) AS montant from "AppConstruction_paiement" where devis_id = %i group by devis_id', self.cleaned_data['devis'])
-            montant_total = cursor.fetchone()[0]
+            cursor.execute('SELECT COALESCE(sum(montant), 0) AS montant from "AppConstruction_paiement" where devis_id = %s group by devis_id', [devis_id])
+            row = cursor.fetchone()
+            if row:
+                montant_total = row[0]
+            else:
+                montant_total = 0
             montant_total = montant_total + montant
-            devis = Devis.objects.get(id=self.cleaned_data['devis'])
+            devis = Devis.objects.get(id=devis_id)
             if montant_total > devis.prix_total:
-                raise forms.ValidationError('montant exceeds')
+                raise forms.ValidationError('montant trop élevé')
         return montant
 
     def __init__(self, client_id=None, *args, **kwargs):

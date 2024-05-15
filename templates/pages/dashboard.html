@@ -1,18 +1,105 @@
 {% extends 'components/dashboard_base.html' %}
+{% load humanize %}
 
 {% block title %}
     Dashboard
 {% endblock %}
 
 {% block content %}
-    <div class="card text-white mb-3" style="max-width: 18rem;">
-        <div class="card-header">Montant total des devis</div>
-        <div class="card-body">
-            <h5 class="card-title">{{ montant_total_devis }}</h5>
+    <div class="container d-grid gap-4">
+
+        <div class="row">
+            <div class="container">
+                <div class="row row-cols-3">
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Montant total des devis</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ montant_total_devis|floatformat:"2"|intcomma }} Ariary</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card text-white mb-3" style="max-width: 18rem;">
+                            <div class="card-header">Montant total payé</div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ montant_total_paye|floatformat:"2"|intcomma }} Ariary</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center">
+            <div class="card w-75 p-3">
+                <div class="row">
+                    <select id="change_annee" class="form-control w-auto" onchange="redirect()">
+                        <option>Selectionner année</option>
+                        <option value="{% url 'dashboard' %}?annee=2024">2024</option>
+                        <option value="{% url 'dashboard' %}?annee=2023">2023</option>
+                    </select>
+                </div>
+                <canvas id="devis-mois"></canvas>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center">
+            <div class="card w-75 p-3">
+                <canvas id="devis-year"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <div class="card p-3 w-50">
+                <form action="{% url 'import-data' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Importation Données</h2>
+                    <div class="container gap-3">
+                        <div class="row">
+                            <label for="mt">Maison et travaux</label>
+                            <input class="form-control" id="mt" type="file" name="maison_travaux">
+                        </div>
+                        <div class="row">
+                            <label for="d">Devis</label>
+                            <input class="form-control" id="d" type="file" name="devis">
+                        </div>
+                        <div class="row">
+                            <input class="btn btn-primary w-auto" type="submit" value="Envoyer">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="card p-3 w-50">
+                <form action="{% url 'import-paiement' %}" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <h2>Importation Paiement</h2>
+                    <div class="container gap-3">
+                        <div class="row">
+                            <label for="mt">Paiement</label>
+                            <input class="form-control" id="mt" type="file" name="paiement">
+                        </div>
+                        <div class="row">
+                            <input class="btn btn-primary w-auto" type="submit" value="Envoyer">
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <canvas id="devis-mois"></canvas>
+    <script>
+        function redirect() {
+            var selectedOption = document.getElementById( "change_annee" ).value;
+            if (selectedOption) {
+                window.location = selectedOption;
+            }
+        }
+    </script>
+
     <script>
         const data_mois = {{ montant_devis_mois|safe }}
         var ctx = document.getElementById( 'devis-mois' ).getContext( '2d' );
@@ -38,7 +125,6 @@
         } );
     </script>
 
-    <canvas id="devis-year"></canvas>
     <script>
         const data_year = {{ montant_devis_year|safe }}
         var ctx = document.getElementById( 'devis-year' ).getContext( '2d' );
@@ -63,32 +149,5 @@
             }
         } );
     </script>
-
-    <div>
-        <form action="{% url 'import-data' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <h2>Importation Données</h2>
-            <div>
-                <label for="mt">Maison et travaux</label>
-                <input id="mt" type="file" name="maison_travaux">
-            </div>
-            <div>
-                <label for="d">Devis</label>
-                <input id="d" type="file" name="devis">
-            </div>
-            <input type="submit" value="Envoyer">
-        </form>
-    </div>
-    <div>
-        <form action="{% url 'import-paiement' %}" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <h2>Importation Paiement</h2>
-            <div>
-                <label for="mt">Paiement</label>
-                <input id="mt" type="file" name="paiement">
-            </div>
-            <input type="submit" value="Envoyer">
-        </form>
-    </div>
 
 {% endblock %}
