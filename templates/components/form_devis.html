@@ -1,3 +1,5 @@
+{% load humanize %}
+
 <form class="form-floating {{ class }}" id="{{ id }}" action="{% url 'construction' %}?form=devis"
       method="{{ method }}">
     {% csrf_token %}
@@ -9,6 +11,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ maison.designation }}</h5>
                         <p class="card-text">{{ maison.description }}.</p>
+                        <p>{{ maison.somme|floatformat:"2"|intcomma }} Ar</p>
+                        <p>{{ maison.duree }} jours de construction</p>
+                        <p>{{ maison.surface }} m2</p>
                         <a href="#" class="btn btn-primary">Selectionner</a>
                     </div>
                 </div>

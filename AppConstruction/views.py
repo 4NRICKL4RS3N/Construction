@@ -58,7 +58,10 @@ class ClientView(View):
             devis = Devis.objects.filter(client=client_id)
             devis_form = DevisForm()
             paiement_form = PaiementForm(client_id)
-            maisons = Maison.objects.all()
+            # maisons = Maison.objects.all()
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM maison_view")
+                maisons = dictfetchall(cursor)
             finitions = Finition.objects.all()
             return render(request, self.template_name,
                           {'client': client, 'devis_form': devis_form, 'maisons': maisons, 'finitions': finitions,

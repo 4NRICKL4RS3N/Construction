@@ -88,9 +88,11 @@
                     </div>
                 </div>
                 <div class="row">
+                    <h3>Construire une maison</h3>
                     {% include 'components/form_devis.html' with form=devis_form class="row g-3" id="login-form" method="post" submit="valider" %}
                 </div>
                 <div class="row w-50">
+                    <h3>Payer</h3>
                     <div id="error-message" class="alert alert-danger" style="display:none;" role="alert"></div>
                     {% url 'construction' as construction_url %}
                     {% with action=construction_url|add:"?form=paiement" %}
