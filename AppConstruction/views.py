@@ -53,6 +53,8 @@ class ClientView(View):
         client_id = request.session.get('client_id')
         if client_id:
             client = Client.objects.get(pk=client_id)
+            if client is None:
+                return redirect(reverse('login_user'))
             devis = Devis.objects.filter(client=client_id)
             devis_form = DevisForm()
             paiement_form = PaiementForm(client_id)

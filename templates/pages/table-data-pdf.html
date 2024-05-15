@@ -1,4 +1,6 @@
 {% load static %}
+{% load humanize %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,12 +51,12 @@
             <td style="text-align: left;">{{ item.designation }}</td>
             <td style="text-align: left;">{{ item.unite }}</td>
             <td style="text-align: right;">{{ item.quantite }}</td>
-            <td style="text-align: right;">{{ item.prix_unitaire }}</td>
-            <td style="text-align: right;">{{ item.prix_total }}</td>
+            <td style="text-align: right;">{{ item.prix_unitaire|floatformat:"2"|intcomma }}Ar</td>
+            <td style="text-align: right;">{{ item.prix_total|floatformat:"2"|intcomma }}Ar</td>
         </tr>
     {% endfor %}
     </tbody>
 </table>
-<h2>Total : {{ devis.prix_total }}</h2>
+<h2>Total : {{ devis.prix_total|floatformat:"2"|intcomma }}Ar</h2>
 </body>
 </html>

@@ -1,4 +1,5 @@
 {% extends 'components/dashboard_base.html' %}
+{% load humanize %}
 
 {% block title %}
     Devis
@@ -9,7 +10,7 @@
         <thead>
         <tr>
             <th class="table_head">
-                id
+                ref
                 <span style="color: Dodgerblue;">
                     <i class="sort-icon fa fa-sort"></i>
                 </span>
@@ -38,10 +39,10 @@
         <tbody>
         {% for item in devis %}
             <tr>
-                <td style="text-align: left;">{{ item.id }}</td>
-                <td style="text-align: right;">{{ item.prix_total }}</td>
-                <td style="text-align: right;">{{ item.paiement_total }}</td>
-                <td style="text-align: right;">{{ item.pourcentage }}%</td>
+                <td style="text-align: left;">{{ item.ref_devis }}</td>
+                <td style="text-align: right;">{{ item.prix_total|floatformat:"2"|intcomma }}</td>
+                <td style="text-align: right;">{{ item.paiement_total|floatformat:"2"|intcomma }}</td>
+                <td style="text-align: right;">{{ item.pourcentage|floatformat:"2"|intcomma }}%</td>
                 <td>
                     <a href="{% url 'devis-detail' item.id %}" class="btn btn-primary">view</a>
                 </td>

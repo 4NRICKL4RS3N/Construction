@@ -11,8 +11,8 @@ class ClientForm(ModelForm):
 
     def clean_numero(self):
         level = self.cleaned_data['numero']
-        if len(level) < 10:
-            raise forms.ValidationError('trop court')
+        # if len(level) < 10:
+        #     raise forms.ValidationError('trop court')
         return level
 
     def __init__(self, *args, **kwargs):

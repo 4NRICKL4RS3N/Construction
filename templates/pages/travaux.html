@@ -1,4 +1,5 @@
 {% extends 'components/dashboard_base.html' %}
+{% load humanize %}
 
 {% block title %}
     Travaux
@@ -41,7 +42,7 @@
                 <td style="text-align: left;">{{ item.code_travaux }}</td>
                 <td style="text-align: right;">{{ item.designation }}</td>
                 <td style="text-align: right;">{{ item.unite }}</td>
-                <td style="text-align: right;">{{ item.prix_unitaire }}</td>
+                <td style="text-align: right;">{{ item.prix_unitaire|floatformat:"2"|intcomma }}</td>
                 <td>
                     <a href="{% url 'travaux-admin' %}/update/{{ item.id }}" class="btn btn-warning">update</a>
                 </td>
