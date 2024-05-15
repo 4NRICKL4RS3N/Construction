@@ -442,10 +442,12 @@ class FinitionUpdateView(View):
         return redirect(reverse('finition-admin'))
 
 
-def generate_pdf(devis, objects_list):
+def generate_pdf(devis, objects_list, paiement, paiement_total):
     context = {
         'data': objects_list,
         'devis': devis,
+        'paiement': paiement,
+        'paiement_total': paiement_total,
     }
     html_content = render_to_string('pages/table-data-pdf.html', context)
     options = {
@@ -468,7 +470,14 @@ class ExportDevisPDF(View):
         if request.GET.get('id_devis'):
             devis = Devis.objects.get(id=request.GET.get('id_devis'))
             objects_list = DetailDevis.objects.filter(devis=devis)
-            buffer = generate_pdf(devis, objects_list)
+            with connection.cursor() as cursor:
+                cursor.execute(f'SELECT * FROM "AppConstruction_paiement" where devis_id = {devis.id}')
+                paiement = dictfetchall(cursor)
+            print(paiement)
+            paiement_total = 0
+            for paie in paiement:
+                paiement_total += paie['montant']
+            buffer = generate_pdf(devis, objects_list, paiement, paiement_total)
             pdf_content = buffer.getvalue()
             encoded_pdf = base64.b64encode(pdf_content).decode('utf-8')
             embedded_pdf = f'<embed src="data:application/pdf;base64,{encoded_pdf}" type="application/pdf" width="100%" height="600px" />'

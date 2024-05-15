@@ -58,5 +58,34 @@
     </tbody>
 </table>
 <h2>Total : {{ devis.prix_total|floatformat:"2"|intcomma }}Ar</h2>
+
+<h1>Paiements</h1>
+
+<table class="table" border="1">
+    <thead>
+    <tr>
+        <th class="table_head">
+            reference
+        </th>
+        <th class="table_head">
+            montant
+        </th>
+        <th class="table_head">
+            date
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in paiement %}
+        <tr>
+            <td style="text-align: left;">{{ item.ref_paiement }}</td>
+            <td style="text-align: right;">{{ item.montant|floatformat:"2"|intcomma }}Ar</td>
+            <td style="text-align: right;">{{ item.date }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<h2>Total payé : {{ paiement_total|floatformat:"2"|intcomma }}Ar</h2>
+
 </body>
 </html>
