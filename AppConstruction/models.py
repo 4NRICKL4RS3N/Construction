@@ -75,6 +75,9 @@ class Devis(models.Model):
     lieu = models.CharField(max_length=50, null=True)
     fields_to_show = ['maison', 'finition', 'prix_total', 'date_devis']
 
+    def __str__(self):
+        return self.ref_devis
+
 
 class DetailDevis(models.Model):
     devis = models.ForeignKey(Devis, on_delete=models.SET_NULL, null=True)

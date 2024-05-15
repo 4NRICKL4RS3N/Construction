@@ -69,12 +69,13 @@ class ClientView(View):
         if request.GET['form'] == "devis":
             post_data = request.POST.copy()
             post_data['maison'] = request.POST['maison']
-            post_data['date_fin_construction'] = add_days_to_date(post_data['date_debut_construction'], Maison.objects.get(id=post_data['maison']).duree)
+            post_data['date_fin_construction'] = add_days_to_date(post_data['date_debut_construction'],
+                                                                  Maison.objects.get(id=post_data['maison']).duree)
             post_data['valeur_finition'] = Finition.objects.get(pk=request.POST['finition']).pourcentage
             prix = PrixMaison.objects.get(maison_id=post_data['maison']).somme
             post_data['prix_total'] = prix + (prix * post_data['valeur_finition'] / 100)
             post_data['client'] = request.session.get('client_id')
-            post_data['ref_devis'] = "D"+str(get_next_pk(Devis))
+            post_data['ref_devis'] = "D" + str(get_next_pk(Devis))
             print(post_data)
             devis_form = DevisForm(post_data)
             if devis_form.is_valid():
@@ -96,7 +97,11 @@ class ClientView(View):
             if paiement_form.is_valid():
                 paiement_form.save()
                 return redirect(reverse('construction'))
-            return redirect(reverse('construction'))
+
+            errors = dict([(k, [str(e) for e in v]) for k, v in paiement_form.errors.items()])
+            print("not valid")
+            print(errors)
+            return JsonResponse({'success': False, 'errors': errors})
 
 
 class ConnectionAdminView(View):
@@ -143,59 +148,63 @@ class AdminView(View):
                 cursor.execute("SELECT * FROM devis_paiement")
                 devis = dictfetchall(cursor)
             for row in devis:
-                row["pourcentage"] = 100*row['paiement_total']/row['prix_total']
+                row["pourcentage"] = 100 * row['paiement_total'] / row['prix_total']
             return render(request, self.template_name, {'admin': admin, 'devis': devis})
-        return redirect(reverse('admin_user'))
+        return redirect(reverse('login_admin'))
 
 
 class DevisDetailView(View):
     template_name = 'pages/devis.html'
 
     def get(self, request, pk):
-        devis_detail = DetailDevis.objects.filter(devis_id=pk)
-        return render(request, self.template_name, {'devis_detail': devis_detail, 'devis_id': pk})
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            devis_detail = DetailDevis.objects.filter(devis_id=pk)
+            return render(request, self.template_name, {'devis_detail': devis_detail, 'devis_id': pk})
+        return redirect(reverse('login_admin'))
 
 
 class DashboardView(View):
     template_name = 'pages/dashboard.html'
-    mois = """
-        SELECT to_char(month_series.month, 'YYYY-MM') AS month,
-        COALESCE(SUM("AppConstruction_devis".prix_total), 0) AS total_price
-        FROM (
-            SELECT generate_series('2024-01-01'::date, '2024-12-31'::date, '1 month') AS month
-        ) AS month_series
-        LEFT JOIN "AppConstruction_devis" ON to_char("AppConstruction_devis".date_devis, 'YYYY-MM') = to_char(month_series.month, 'YYYY-MM')
-        GROUP BY to_char(month_series.month, 'YYYY-MM')
-        ORDER BY month;
-    """
 
     def get(self, request):
-        montant_total_devis = 0
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM montant_total_devis")
-            montant_total_devis = cursor.fetchone()[0]
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            montant_total_devis = 0
+            annee = 2024
+            if request.GET.get("annee"):
+                annee = request.GET['annee']
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM montant_total_devis")
+                montant_total_devis = cursor.fetchone()[0]
 
-            cursor.execute("""
-                SELECT to_char(month_series.month, 'YYYY-MM') AS month,COALESCE(SUM("AppConstruction_devis".prix_total), 0) AS total_price
-                FROM ( SELECT generate_series('2024-01-01'::date, '2024-12-31'::date, '1 month') AS month ) AS month_series
-                LEFT JOIN "AppConstruction_devis" ON to_char("AppConstruction_devis".date_devis, 'YYYY-MM') = to_char(month_series.month, 'YYYY-MM')
-                GROUP BY to_char(month_series.month, 'YYYY-MM')
-                ORDER BY month;
-            """)
-            montant_devis_mois = dictfetchall(cursor)
+                cursor.execute("select * from montant_total_paye")
+                montant_total_paye = cursor.fetchone()[0]
 
-            cursor.execute("""
-                SELECT to_char(year_series.year, 'YYYY') AS year,
-                       COALESCE(SUM("AppConstruction_devis".prix_total), 0) AS total_price
-                FROM (
-                    SELECT generate_series('2020-01-01'::date, '2024-12-31'::date, '1 year') AS year
-                ) AS year_series
-                LEFT JOIN "AppConstruction_devis" ON EXTRACT(YEAR FROM "AppConstruction_devis".date_devis) = EXTRACT(YEAR FROM year_series.year)
-                GROUP BY to_char(year_series.year, 'YYYY')
-                ORDER BY year;
-            """)
-            montant_devis_year = dictfetchall(cursor)
-        return render(request, self.template_name, {'montant_total_devis': montant_total_devis, 'montant_devis_mois': montant_devis_mois, 'montant_devis_year': montant_devis_year})
+                cursor.execute(f"""
+                    SELECT to_char(month_series.month, 'YYYY-MM') AS month,COALESCE(SUM("AppConstruction_devis".prix_total), 0) AS total_price
+                    FROM ( SELECT generate_series('{annee}-01-01'::date, '{annee}-12-31'::date, '1 month') AS month ) AS month_series
+                    LEFT JOIN "AppConstruction_devis" ON to_char("AppConstruction_devis".date_devis, 'YYYY-MM') = to_char(month_series.month, 'YYYY-MM')
+                    GROUP BY to_char(month_series.month, 'YYYY-MM')
+                    ORDER BY month;
+                """)
+                montant_devis_mois = dictfetchall(cursor)
+
+                cursor.execute("""
+                    SELECT to_char(year_series.year, 'YYYY') AS year,
+                           COALESCE(SUM("AppConstruction_devis".prix_total), 0) AS total_price
+                    FROM (
+                        SELECT generate_series('2020-01-01'::date, '2024-12-31'::date, '1 year') AS year
+                    ) AS year_series
+                    LEFT JOIN "AppConstruction_devis" ON EXTRACT(YEAR FROM "AppConstruction_devis".date_devis) = EXTRACT(YEAR FROM year_series.year)
+                    GROUP BY to_char(year_series.year, 'YYYY')
+                    ORDER BY year;
+                """)
+                montant_devis_year = dictfetchall(cursor)
+            return render(request, self.template_name,
+                          {'montant_total_devis': montant_total_devis, 'montant_devis_mois': montant_devis_mois,
+                           'montant_devis_year': montant_devis_year, 'montant_total_paye': montant_total_paye})
+        return redirect(reverse('login_admin'))
 
 
 class ImportData(View):
@@ -310,13 +319,23 @@ class ImportData(View):
                         devis_dict['prix_total'] = prix + (prix * devis_dict['valeur_finition'] / 100)
                         devis_dict['date_devis'] = format_date(row[5])
                         devis_dict['date_debut_construction'] = format_date(row[6])
-                        devis_dict['date_fin_construction'] = add_days_to_date(devis_dict['date_debut_construction'], maison.duree)
+                        devis_dict['date_fin_construction'] = add_days_to_date(devis_dict['date_debut_construction'],
+                                                                               maison.duree)
                         devis_dict['ref_devis'] = row[1]
                         devis_dict['lieu'] = row[7]
                         devis_form = DevisForm(devis_dict)
                         if devis_form.is_valid():
                             print("tafiditra le devis")
-                            devis_form.save()
+                            with connection.cursor() as cursor:
+                                cursor.execute("SELECT * FROM detail_devis_view where maison_id = %s",
+                                               [devis_dict['maison'].id])
+                                travaux = cursor.fetchall()
+                            devis = devis_form.save()
+                            for trav in travaux:
+                                detail_devis = DetailDevis(devis=devis, travaux=Travaux.objects.get(id=trav[1]),
+                                                           designation=trav[2], unite=trav[3], quantite=trav[4],
+                                                           prix_unitaire=trav[5], prix_total=trav[6])
+                                detail_devis.save()
                         else:
                             print("tsy tafiditra le devis")
                             print(devis_form.errors)
@@ -360,17 +379,23 @@ class TravauxView(View):
     template_name = 'pages/travaux.html'
 
     def get(self, request):
-        travaux = Travaux.objects.all()
-        return render(request, self.template_name, {'travaux': travaux})
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            travaux = Travaux.objects.all()
+            return render(request, self.template_name, {'travaux': travaux})
+        return redirect(reverse('login_admin'))
 
 
 class TravauxUpdateView(View):
     template_name = 'pages/travaux_update.html'
 
     def get(self, request, pk):
-        travaux = Travaux.objects.get(id=pk)
-        form_travaux = TravauxForm(instance=travaux)
-        return render(request, self.template_name, {'form_travaux': form_travaux, "travaux": travaux})
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            travaux = Travaux.objects.get(id=pk)
+            form_travaux = TravauxForm(instance=travaux)
+            return render(request, self.template_name, {'form_travaux': form_travaux, "travaux": travaux})
+        return redirect(reverse('login_admin'))
 
     def post(self, request, pk):
         print(request.POST)
@@ -385,17 +410,23 @@ class FinitionView(View):
     template_name = 'pages/finition.html'
 
     def get(self, request):
-        finition = Finition.objects.all()
-        return render(request, self.template_name, {'finition': finition})
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            finition = Finition.objects.all()
+            return render(request, self.template_name, {'finition': finition})
+        return redirect(reverse('login_admin'))
 
 
 class FinitionUpdateView(View):
     template_name = 'pages/finition_update.html'
 
     def get(self, request, pk):
-        finition = Finition.objects.get(id=pk)
-        form_finition = FinitionForm(instance=finition)
-        return render(request, self.template_name, {'form_finition': form_finition, "finition": finition})
+        admin_id = request.session.get('admin_id')
+        if admin_id:
+            finition = Finition.objects.get(id=pk)
+            form_finition = FinitionForm(instance=finition)
+            return render(request, self.template_name, {'form_finition': form_finition, "finition": finition})
+        return redirect(reverse('login_admin'))
 
     def post(self, request, pk):
         print(request.POST)
@@ -404,6 +435,7 @@ class FinitionUpdateView(View):
         if form_finition.is_valid():
             form_finition.save()
         return redirect(reverse('finition-admin'))
+
 
 def generate_pdf(devis, objects_list):
     context = {
@@ -443,10 +475,12 @@ def get_next_pk(model):
     next_primary_key = max_primary_key + 1 if max_primary_key is not None else 1
     return next_primary_key
 
+
 def format_date(date_str):
     date_obj = datetime.strptime(date_str, "%d/%m/%Y")
     formatted_date = date_obj.strftime("%Y-%m-%d")
     return formatted_date
+
 
 def add_days_to_date(date_str, days):
     date_obj = datetime.strptime(date_str, "%Y-%m-%d")
@@ -470,7 +504,7 @@ def init_csv_data(request, file_name):
 class Logout(View):
     def get(self, request):
         request.session.flush()
-        return redirect(reverse('login_user'))
+        return redirect(reverse('login_admin'))
 
 
 class ResetDatabase(View):
