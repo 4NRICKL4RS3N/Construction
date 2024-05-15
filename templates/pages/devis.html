@@ -45,9 +45,9 @@
             <tr>
                 <td style="text-align: left;">{{ item.designation }}</td>
                 <td style="text-align: right;">{{ item.unite }}</td>
-                <td style="text-align: right;">{{ item.quantite }}</td>
-                <td style="text-align: right;">{{ item.prix_unitaire }}</td>
-                <td style="text-align: right;">{{ item.prix_total }}</td>
+                <td style="text-align: right;">{{ item.quantite|floatformat:"2"|intcomma }}</td>
+                <td style="text-align: right;">{{ item.prix_unitaire|floatformat:"2"|intcomma }}</td>
+                <td style="text-align: right;">{{ item.prix_total|floatformat:"2"|intcomma }}</td>
             </tr>
         {% endfor %}
         </tbody>
