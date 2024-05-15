@@ -201,7 +201,6 @@ class DashboardView(View):
                     ORDER BY year;
                 """)
                 montant_devis_year = dictfetchall(cursor)
-                print(montant_total_paye)
             return render(request, self.template_name,
                           {'montant_total_devis': montant_total_devis, 'montant_devis_mois': montant_devis_mois,
                            'montant_devis_year': montant_devis_year, 'montant_total_paye': montant_total_paye})
